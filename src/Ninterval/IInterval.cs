@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Ninterval.Contracts;
 
 namespace Ninterval
 {
@@ -11,40 +11,38 @@ namespace Ninterval
     /// Interval class
     /// </summary>
     /// <typeparam name="T">type of data represented with the intervals</typeparam>
-    [ContractClass(typeof(IntervalContractClass<T>))]
-    public interface IInterval<in T> 
-        where T:struct,IComparable<T>
+    [ContractClass(typeof(IIntervalContract<>))]
+    public interface IInterval<out T> 
+        where T :IComparable<T>
     {
         /// <summary>
-        /// Left value of the interval
+        /// Left bound of the interval
         /// </summary>
-        Nullable<T> Left{ get; }
+        T Left{ get; }
 
         /// <summary>
-        /// Right value of the interval
+        /// Indicate if the left bound is open (or close)
         /// </summary>
-        Nullable<T> Right { get; }
+        bool IsLeftOpenedInterval { get; }
+
+        /// <summary>
+        /// Indicate if the left bound correspond to an infinite value
+        /// </summary>
+        bool IsLeftInfinite { get; }
+
+        /// <summary>
+        /// Right bound of the interval
+        /// </summary>
+        T Right { get; }
+
+        /// <summary>
+        /// Indicate if the right bound is open (or close)
+        /// </summary>
+        bool IsRightOpenedInterval { get; }
+
+        /// <summary>
+        /// Indicate if the right bound correspond to an infinite value
+        /// </summary>
+        bool IsRightInfinite { get; }
     }
-
-    [ContractClassFor(typeof(IInterval<T>))]
-    internal class IntervalContractClass<T>:IInterval<T>
-        where T : struct,IComparable<T>
-    {
-        public T? Left
-        {
-	        get { return null; }
-        }
-
-        public T? Right
-        {
-	        get { return null; }
-        }
-
-        [ContractInvariantMethod]
-        private void Invariant()
-        {
-            Contract.Invariant(!Left.HasValue || !Right.HasValue || Left.Value.CompareTo(Right.Value) <= 0);
-        }
-
-}
 }
