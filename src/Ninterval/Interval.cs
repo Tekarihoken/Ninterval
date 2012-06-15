@@ -7,12 +7,40 @@ using System.Text;
 
 namespace Ninterval
 {
+
+
+    /// <summary>
+    /// Can be used as base class in order to represent an interval
+    /// </summary>
+    /// <typeparam name="T">Type of the interval</typeparam>
     public abstract class Interval<T> : IInterval<T>
         where T:IComparable<T>
     {
+        /// <summary>
+        /// Flags enumeration used in order to manage the type of bound
+        /// </summary>
+        [Flags]
+        private enum BoundAtributes
+        {
+            None = 0,
+            IsLeftInfinite = 1,
+            IsRightInfinite = 2,
+            IsLeftOpenedInterval = 4,
+            IsRightOpenedInterval = 8
+        }
+
+        /// <summary>
+        /// Left bound of the interval
+        /// </summary>
         private readonly T _left;
+        /// <summary>
+        /// Right bound of the interval
+        /// </summary>
         private readonly T _right;
-        private readonly BitArray _boolArray;
+        /// <summary>
+        /// Enumeration storing the attributes of the different bound
+        /// </summary>
+        private readonly BoundAtributes _boundAttributes;
 
         public Interval(T left, T right,
             bool isLeftInfinite, bool isRightInfinite,
@@ -27,8 +55,24 @@ namespace Ninterval
 
             _left = left;
             _right = right;
-            _boolArray = new BitArray(
-                new bool[4] { isLeftInfinite, isRightInfinite, isLeftOpenedInterval, isRightOpenedInterval });
+            BoundAtributes enumeration = BoundAtributes.None;
+            if (isLeftInfinite)
+            {
+                enumeration |= BoundAtributes.IsLeftInfinite;
+            }
+            if (isRightInfinite)
+            {
+                enumeration |= BoundAtributes.IsRightInfinite;
+            }
+            if (isLeftOpenedInterval)
+            {
+                enumeration |= BoundAtributes.IsLeftOpenedInterval;
+            }
+            if (isRightOpenedInterval)
+            {
+                enumeration |= BoundAtributes.IsRightOpenedInterval;
+            }
+            _boundAttributes = enumeration;
         }
 
         public T Left
@@ -38,12 +82,12 @@ namespace Ninterval
 
         public bool IsLeftInfinite
         {
-            get { return _boolArray[0]; }
+            get { return _boundAttributes.HasFlag(BoundAtributes.IsLeftInfinite); }
         }
 
         public bool IsLeftOpenedInterval
         {
-            get { return _boolArray[2]; }
+            get { return _boundAttributes.HasFlag(BoundAtributes.IsLeftOpenedInterval); }
         }
 
         public T Right
@@ -53,12 +97,12 @@ namespace Ninterval
 
         public bool IsRightOpenedInterval
         {
-            get { return _boolArray[3]; }
+            get { return _boundAttributes.HasFlag(BoundAtributes.IsRightInfinite); }
         }
 
         public bool IsRightInfinite
         {
-            get { return _boolArray[1]; }
+            get { return _boundAttributes.HasFlag(BoundAtributes.IsRightOpenedInterval); }
         }
 
         public override string ToString()
