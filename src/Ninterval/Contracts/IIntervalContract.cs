@@ -22,6 +22,17 @@ namespace Ninterval.Contracts
 
         public abstract bool IsRightInfinite { get; }
 
+        /// <summary>
+        /// Indicate if the current interval overlap the other interval
+        /// </summary>
+        /// <param name="other">other interval</param>
+        /// <returns>true if the 2 intvervals are overlaping</returns>
+        bool IInterval<T>.Overlaps(IInterval<T> other)
+        {
+            Contract.Requires(other != null);
+            return false;
+        }
+
         [ContractInvariantMethod]
         private void Invariant()
         {

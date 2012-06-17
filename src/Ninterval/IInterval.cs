@@ -12,7 +12,7 @@ namespace Ninterval
     /// </summary>
     /// <typeparam name="T">type of data represented with the intervals</typeparam>
     [ContractClass(typeof(IIntervalContract<>))]
-    public interface IInterval<out T> 
+    public interface IInterval<T>
         where T :IComparable<T>
     {
         /// <summary>
@@ -44,5 +44,12 @@ namespace Ninterval
         /// Indicate if the right bound correspond to an infinite value
         /// </summary>
         bool IsRightInfinite { get; }
+
+        /// <summary>
+        /// Indicate if the current interval overlap the other interval
+        /// </summary>
+        /// <param name="other">other interval</param>
+        /// <returns>true if the 2 intvervals are overlaping</returns>
+        bool Overlaps(IInterval<T> other);
     }
 }

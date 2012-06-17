@@ -14,7 +14,7 @@ namespace Ninterval
     /// </summary>
     /// <typeparam name="T">Type of the interval</typeparam>
     public abstract class Interval<T> : IInterval<T>
-        where T:IComparable<T>
+        where T : IComparable<T>
     {
         /// <summary>
         /// Flags enumeration used in order to manage the type of bound
@@ -75,36 +75,87 @@ namespace Ninterval
             _boundAttributes = enumeration;
         }
 
+        /// <summary>
+        /// Left bound of the interval
+        /// </summary>
         public T Left
         {
             get { return _left; }
         }
 
-        public bool IsLeftInfinite
-        {
-            get { return _boundAttributes.HasFlag(BoundAtributes.IsLeftInfinite); }
-        }
-
+        /// <summary>
+        /// Indicate if the left bound is open (or close)
+        /// </summary>
         public bool IsLeftOpenedInterval
         {
             get { return _boundAttributes.HasFlag(BoundAtributes.IsLeftOpenedInterval); }
         }
 
+        /// <summary>
+        /// Indicate if the left bound correspond to an infinite value
+        /// </summary>
+        public bool IsLeftInfinite
+        {
+            get { return _boundAttributes.HasFlag(BoundAtributes.IsLeftInfinite); }
+        }
+
+        /// <summary>
+        /// Right bound of the interval
+        /// </summary>
         public T Right
         {
             get { return _right; }
         }
 
+        /// <summary>
+        /// Indicate if the right bound is open (or close)
+        /// </summary>
         public bool IsRightOpenedInterval
         {
             get { return _boundAttributes.HasFlag(BoundAtributes.IsRightInfinite); }
         }
 
+        /// <summary>
+        /// Indicate if the right bound correspond to an infinite value
+        /// </summary>
         public bool IsRightInfinite
         {
             get { return _boundAttributes.HasFlag(BoundAtributes.IsRightOpenedInterval); }
         }
 
+        /// <summary>
+        /// Indicate if the current interval overlap the other interval
+        /// </summary>
+        /// <param name="other">other interval</param>
+        /// <returns>true if the 2 intvervals are overlaping</returns>
+        public bool Overlaps(IInterval<T> other)
+        {
+            //TODO : factorisation
+            if (!other.IsLeftInfinite && !this.IsRightInfinite && this.Right.CompareTo(other.Left) == -1)
+            {
+                return false;
+            }
+            else if (!this.IsRightInfinite && !other.IsLeftInfinite&&this.Left.CompareTo(other.Right)==1)
+            {
+                return false;
+            }
+            else if (!other.IsLeftInfinite && !this.IsRightInfinite && this.Right.CompareTo(other.Left) == 0 &&
+                (this.IsRightOpenedInterval || other.IsRightOpenedInterval))
+            {
+                return false;
+            }
+            else if (!this.IsRightInfinite && !other.IsLeftInfinite && this.Left.CompareTo(other.Right) == 0 &&
+                (this.IsRightOpenedInterval || other.IsLeftOpenedInterval))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Write a string description of the instance
+        /// </summary>
+        /// <returns>string using the form : [x,y]</returns>
         public override string ToString()
         {
             char right;
@@ -119,7 +170,7 @@ namespace Ninterval
             char left;
             if (IsLeftOpenedInterval)
             {
-                left =']' ;
+                left = ']';
             }
             else
             {
