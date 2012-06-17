@@ -7,13 +7,11 @@ using System.Text;
 
 namespace Ninterval
 {
-
-
     /// <summary>
     /// Can be used as base class in order to represent an interval
     /// </summary>
     /// <typeparam name="T">Type of the interval</typeparam>
-    public abstract class Interval<T> : IInterval<T>
+    public class Interval<T> : IInterval<T>
         where T : IComparable<T>
     {
         /// <summary>
@@ -28,6 +26,11 @@ namespace Ninterval
             IsLeftOpenedInterval = 4,
             IsRightOpenedInterval = 8
         }
+
+        /// <summary>
+        /// Represent empty interval
+        /// </summary>
+        private static readonly IInterval<T> _empty=new Interval<T>(default(T),default(T),false,false,true,true);
 
         /// <summary>
         /// Left bound of the interval
@@ -73,6 +76,17 @@ namespace Ninterval
                 enumeration |= BoundAtributes.IsRightOpenedInterval;
             }
             _boundAttributes = enumeration;
+        }
+
+        /// <summary>
+        /// Indicate if the interval is empty or not
+        /// </summary>
+        public bool IsEmpty
+        {
+            get
+            {
+                return this.Equals(Interval<T>._empty);
+            }
         }
 
         /// <summary>
@@ -130,24 +144,21 @@ namespace Ninterval
         /// <returns>true if the 2 intvervals are overlaping</returns>
         public bool Overlaps(IInterval<T> other)
         {
-            //TODO : factorisation
-            if (!other.IsLeftInfinite && !this.IsRightInfinite && this.Right.CompareTo(other.Left) == -1)
+            if (!other.IsLeftInfinite && !this.IsRightInfinite)
             {
-                return false;
+                int comparison = this.Right.CompareTo(other.Left);
+                if(comparison==-1 ||(comparison==0 &&(this.IsRightOpenedInterval || other.IsRightOpenedInterval)))
+                {
+                    return false;
+                }
             }
-            else if (!this.IsRightInfinite && !other.IsLeftInfinite&&this.Left.CompareTo(other.Right)==1)
+            else if (!this.IsRightInfinite && !other.IsLeftInfinite)
             {
-                return false;
-            }
-            else if (!other.IsLeftInfinite && !this.IsRightInfinite && this.Right.CompareTo(other.Left) == 0 &&
-                (this.IsRightOpenedInterval || other.IsRightOpenedInterval))
-            {
-                return false;
-            }
-            else if (!this.IsRightInfinite && !other.IsLeftInfinite && this.Left.CompareTo(other.Right) == 0 &&
-                (this.IsRightOpenedInterval || other.IsLeftOpenedInterval))
-            {
-                return false;
+                int comparison = this.Right.CompareTo(other.Left);
+                if (comparison == 1 || (comparison == 0 && (this.IsRightOpenedInterval || other.IsLeftOpenedInterval)))
+                {
+                    return false;
+                }
             }
             return true;
         }

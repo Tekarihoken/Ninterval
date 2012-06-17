@@ -10,6 +10,11 @@ namespace Ninterval.Contracts
     abstract class IIntervalContract<T> : IInterval<T>
         where T : IComparable<T>
     {
+        /// <summary>
+        /// Indicate if the interval is empty or not
+        /// </summary>
+        public abstract bool IsEmpty { get; }
+
         public abstract T Left { get; }
 
         public abstract bool IsLeftOpenedInterval { get; }
@@ -36,7 +41,10 @@ namespace Ninterval.Contracts
         [ContractInvariantMethod]
         private void Invariant()
         {
-            Contract.Invariant(IsLeftInfinite || IsRightInfinite ||Right.CompareTo(Left)>=0);
+            Contract.Invariant(IsEmpty || IsLeftInfinite || IsRightInfinite || Right.CompareTo(Left) >= 0,
+                "Left bound should be lower or equals to right bound");
+            Contract.Invariant(!(Right.Equals(Left) && (IsLeftOpenedInterval || IsRightOpenedInterval)),
+                "Only singleton [x,x] can have right value equals to left value");
         }
     }
 }

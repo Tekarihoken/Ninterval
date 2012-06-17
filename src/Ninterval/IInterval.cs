@@ -46,6 +46,11 @@ namespace Ninterval
         bool IsRightInfinite { get; }
 
         /// <summary>
+        /// Indicate if the interval is empty or not
+        /// </summary>
+        bool IsEmpty { get; }
+
+        /// <summary>
         /// Indicate if the current interval overlap the other interval
         /// </summary>
         /// <param name="other">other interval</param>
